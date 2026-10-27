@@ -1,5 +1,8 @@
-// database related modules
+const { databaseConnection, query, getPool } = require('./connection');
+
 module.exports = {
-    databaseConnection: require('./connection'),
+    databaseConnection,
+    query,
+    getPool,
     CustomerRepository: require('./repository/customer-repository'),
-}
+};

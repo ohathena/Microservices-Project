@@ -2,31 +2,31 @@ const express = require('express');
 const { PORT } = require('./config');
 const { databaseConnection } = require('./database');
 const expressApp = require('./express-app');
-const { CreateChannel } = require('./utils')
+const { CreateChannel } = require('./utils');
 
-const StartServer = async() => {
+const StartServer = async () => {
+  const app = express();
 
-    const app = express();
-    
-    await databaseConnection();
+  // Initialize Neon PostgreSQL Database
+  await databaseConnection();
 
-    const channel = await CreateChannel()
+  // Initialize Message Broker (RabbitMQ) if available
+  const channel = await CreateChannel();
 
-    await expressApp(app, channel);
-    
+  // Initialize Express App
+  await expressApp(app, channel);
 
-    app.listen(PORT, () => {
-          console.log(`listening to port ${PORT}`);
+  app
+    .listen(PORT, () => {
+      console.log(`🚀 Customer service listening on port ${PORT}`);
     })
     .on('error', (err) => {
-        console.log(err);
-        process.exit();
+      console.error('Server error:', err);
+      process.exit(1);
     })
     .on('close', () => {
-        channel.close();
-    })
-    
-
-}
+      if (channel) channel.close();
+    });
+};
 
 StartServer();

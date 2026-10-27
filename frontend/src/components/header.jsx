@@ -925,7 +925,32 @@ function CartDrawer({ isOpen, onClose, cart, setCart }) {
    ========================================================================= */
 
 function AccountDropdown({ isOpen, onClose }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      try {
+        const stored = localStorage.getItem('cradle_user');
+        if (stored) {
+          setUser(JSON.parse(stored));
+        } else {
+          setUser(null);
+        }
+      } catch (e) {
+        setUser(null);
+      }
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
+
+  const handleSignOut = () => {
+    localStorage.removeItem('cradle_token');
+    localStorage.removeItem('cradle_user');
+    setUser(null);
+    onClose();
+    window.location.reload();
+  };
 
   return (
     <div
@@ -933,53 +958,107 @@ function AccountDropdown({ isOpen, onClose }) {
       aria-orientation="vertical"
       className="absolute right-0 top-full mt-2 w-64 bg-white border border-[#E5E5E5] shadow-xl rounded-md py-2 z-50 animate-in fade-in duration-150"
     >
-      <div className="px-4 py-3 border-b border-neutral-100">
-        <p className="text-xs font-bold text-[#111111]">Welcome to cradle.</p>
-        <p className="text-[11px] text-neutral-500">Access your rigs, orders & hardware specs</p>
-      </div>
+      {user ? (
+        <>
+          <div className="px-4 py-3 border-b border-neutral-100 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-black text-white font-bold text-xs flex items-center justify-center shrink-0 overflow-hidden">
+              {user.picture ? (
+                <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
+              ) : (
+                (user.name || 'U').charAt(0).toUpperCase()
+              )}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-xs font-bold text-[#111111] truncate">{user.name}</p>
+              <p className="text-[11px] text-neutral-500 truncate">{user.email}</p>
+            </div>
+          </div>
 
-      <div className="py-1">
-        <Link
-          to="/login"
-          onClick={onClose}
-          className="flex items-center justify-between px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
-        >
-          <span>Sign In / Register</span>
-          <ArrowRight size={12} className="text-neutral-400" />
-        </Link>
-        <Link
-          to="/orders"
-          onClick={onClose}
-          className="block px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
-        >
-          Orders & Tracking
-        </Link>
-        <Link
-          to="/wishlist"
-          onClick={onClose}
-          className="flex items-center justify-between px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
-        >
-          <span>Saved PC Builds</span>
-          <span className="text-[10px] px-1.5 py-0.5 bg-neutral-100 rounded text-neutral-600 font-bold">3</span>
-        </Link>
-        <Link
-          to="/support"
-          onClick={onClose}
-          className="block px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
-        >
-          24/7 Priority Support & RMA
-        </Link>
-      </div>
+          <div className="py-1">
+            <Link
+              to="/orders"
+              onClick={onClose}
+              className="flex items-center justify-between px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
+            >
+              <span>My Orders & RMA</span>
+            </Link>
+            <Link
+              to="/wishlist"
+              onClick={onClose}
+              className="flex items-center justify-between px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
+            >
+              <span>Saved PC Builds</span>
+              <span className="text-[10px] px-1.5 py-0.5 bg-neutral-100 rounded text-neutral-600 font-bold">3</span>
+            </Link>
+            <Link
+              to="/support"
+              onClick={onClose}
+              className="block px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
+            >
+              24/7 Priority Support
+            </Link>
+          </div>
 
-      <div className="pt-2 border-t border-neutral-100 px-4 pb-1">
-        <Link
-          to="/login"
-          onClick={onClose}
-          className="w-full block text-center py-2 bg-black text-white text-[11px] font-bold uppercase tracking-wider hover:bg-neutral-800 transition-colors"
-        >
-          Sign In
-        </Link>
-      </div>
+          <div className="pt-2 border-t border-neutral-100 px-4 pb-1">
+            <button
+              onClick={handleSignOut}
+              className="w-full block text-center py-2 border border-neutral-300 text-neutral-800 text-[11px] font-bold uppercase tracking-wider hover:bg-neutral-100 transition-colors rounded"
+            >
+              Sign Out
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="px-4 py-3 border-b border-neutral-100">
+            <p className="text-xs font-bold text-[#111111]">Welcome to cradle.</p>
+            <p className="text-[11px] text-neutral-500">Access your rigs, orders & hardware specs</p>
+          </div>
+
+          <div className="py-1">
+            <Link
+              to="/login"
+              onClick={onClose}
+              className="flex items-center justify-between px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
+            >
+              <span>Sign In / Register</span>
+              <ArrowRight size={12} className="text-neutral-400" />
+            </Link>
+            <Link
+              to="/orders"
+              onClick={onClose}
+              className="block px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
+            >
+              Orders & Tracking
+            </Link>
+            <Link
+              to="/wishlist"
+              onClick={onClose}
+              className="flex items-center justify-between px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
+            >
+              <span>Saved PC Builds</span>
+              <span className="text-[10px] px-1.5 py-0.5 bg-neutral-100 rounded text-neutral-600 font-bold">3</span>
+            </Link>
+            <Link
+              to="/support"
+              onClick={onClose}
+              className="block px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
+            >
+              24/7 Priority Support & RMA
+            </Link>
+          </div>
+
+          <div className="pt-2 border-t border-neutral-100 px-4 pb-1">
+            <Link
+              to="/login"
+              onClick={onClose}
+              className="w-full block text-center py-2 bg-black text-white text-[11px] font-bold uppercase tracking-wider hover:bg-neutral-800 transition-colors rounded"
+            >
+              Sign In
+            </Link>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -1048,6 +1127,19 @@ function MobileMenuDrawer({
   openCart,
 }) {
   const [expandedSection, setExpandedSection] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      try {
+        const stored = localStorage.getItem('cradle_user');
+        if (stored) setCurrentUser(JSON.parse(stored));
+        else setCurrentUser(null);
+      } catch (e) {
+        setCurrentUser(null);
+      }
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -1260,7 +1352,7 @@ function MobileMenuDrawer({
               onClick={onClose}
               className="w-full py-2.5 bg-black text-white text-xs font-bold uppercase tracking-wider text-center rounded hover:bg-neutral-800 transition-colors"
             >
-              Sign In / Account
+              {currentUser ? `My Account (${currentUser.name?.split(' ')[0] || 'Member'})` : 'Sign In / Account'}
             </Link>
           </div>
         </div>
