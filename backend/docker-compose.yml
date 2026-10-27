@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   customer:
     build:
@@ -15,6 +13,40 @@ services:
     env_file:
       - ./customer/.env.dev
 
+  products:
+    build:
+      dockerfile: Dockerfile
+      context: ./products
+    container_name: products
+    ports:
+      - "8002:8002"
+    restart: always
+    volumes:
+      - ./products:/app/products
+      - /app/products/node_modules
+    env_file:
+      - ./products/.env.dev
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+  mongodb:
+    image: mongo:7
+    container_name: products-mongodb
+    ports:
+      - "27017:27017"
+    restart: always
+    volumes:
+      - products-mongodb-data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: microservices-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: always
+
   nginx-proxy:
     build:
       dockerfile: Dockerfile
@@ -22,6 +54,10 @@ services:
     container_name: nginx-proxy
     depends_on:
       - customer
+      - products
     ports:
       - "80:80"
     restart: always
+
+volumes:
+  products-mongodb-data:
