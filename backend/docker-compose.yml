@@ -47,6 +47,22 @@ services:
       - "15672:15672"
     restart: always
 
+  news:
+    build:
+      dockerfile: Dockerfile
+      context: ./news
+    container_name: news
+    ports:
+      - "8004:8004"
+    restart: always
+    volumes:
+      - ./news:/app/news
+      - /app/news/node_modules
+    env_file:
+      - ./news/.env.dev
+    depends_on:
+      - mongodb
+
   nginx-proxy:
     build:
       dockerfile: Dockerfile
@@ -55,9 +71,11 @@ services:
     depends_on:
       - customer
       - products
+      - news
     ports:
       - "80:80"
     restart: always
+
 
 volumes:
   products-mongodb-data:
