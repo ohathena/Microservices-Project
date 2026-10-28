@@ -58,6 +58,30 @@ services:
     ports:
       - "80:80"
     restart: always
+  
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    restart: always
+
+  mail:
+    build:
+      dockerfile: Dockerfile
+      context: ./mail
+    container_name: mail
+    ports:
+      - "8004:8004"
+    restart: always
+    volumes:
+      - ./mail:/app/mail
+    env_file:
+      - ./mail/.env.dev
+    depends_on:
+      - rabbitmq
+      - mailpit
 
 volumes:
   products-mongodb-data:
