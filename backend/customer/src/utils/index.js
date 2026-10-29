@@ -59,16 +59,31 @@ module.exports.FormateData = (data) => {
 
 // Message Broker (RabbitMQ) with graceful fallback
 module.exports.CreateChannel = async () => {
-  try {
-    const connection = await amqplib.connect(MSG_QUEUE_URL);
-    const channel = await connection.createChannel();
-    await channel.assertExchange(EXCHANGE_NAME, "direct", { durable: true });
-    console.log("✅ RabbitMQ channel established.");
-    return channel;
-  } catch (err) {
-    console.log("ℹ️ RabbitMQ connection skipped or unavailable (running in standalone mode).");
-    return null;
+  const maxAttempts = 15;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const connection = await amqplib.connect(MSG_QUEUE_URL);
+      const channel = await connection.createChannel();
+      await channel.assertExchange(EXCHANGE_NAME, "direct", { durable: true });
+      console.log("✅ RabbitMQ channel established.");
+      return channel;
+    } catch (err) {
+      console.error(
+        `RabbitMQ connection attempt ${attempt}/${maxAttempts} failed:`,
+        err.message
+      );
+
+      if (attempt < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+    }
   }
+
+  console.log(
+    "ℹ️ RabbitMQ connection skipped or unavailable (running in standalone mode)."
+  );
+  return null;
 };
 
 module.exports.PublishMessage = (channel, service, msg) => {
