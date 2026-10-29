@@ -35,6 +35,37 @@ function welcomeEmailTemplate({ name }) {
   };
 }
 
+function orderConfirmationEmailTemplate({ name, order }) {
+    const items = Array.isArray(order.items) ? order.items : [];
+    const itemRows = items
+        .map(({ product, unit }) => `
+          <tr>
+            <td>${product?.name || "Product"}</td>
+            <td>${unit || 0}</td>
+            <td>${product?.price || 0}</td>
+          </tr>`)
+        .join("");
+
+    return {
+        subject: `Order confirmation - ${order.orderId || "Cradle Store"}`,
+        html: `
+          <html>
+            <body style="font-family: Arial, sans-serif; padding: 20px;">
+              <h2>Thank you for your order, ${name}!</h2>
+              <p>Your order <strong>${order.orderId || "has been received"}</strong> has been received.</p>
+              <p>Total: <strong>${order.amount || 0}</strong></p>
+              ${itemRows ? `
+                <table border="1" cellpadding="8" cellspacing="0">
+                  <thead>
+                    <tr><th>Product</th><th>Quantity</th><th>Price</th></tr>
+                  </thead>
+                  <tbody>${itemRows}</tbody>
+                </table>` : ""}
+            </body>
+          </html>`,
+    };
+}
+
 async function sendEmail({ to, subject, html }) {
     await transporter.sendMail({
         from: MAIL_FROM,
@@ -54,6 +85,25 @@ async function handleMailEvent(payload) {
             }
 
             const template = welcomeEmailTemplate({ name: data.name || "Customer",});
+
+            await sendEmail({
+                to: data.to,
+                subject: template.subject,
+                html: template.html,
+            });
+
+            return;
+        }
+
+        case "ORDER_CREATED": {
+            if (!data || !data.to || !data.order) {
+                throw new Error("Missing order email data");
+            }
+
+            const template = orderConfirmationEmailTemplate({
+                name: data.name || "Customer",
+                order: data.order,
+            });
 
             await sendEmail({
                 to: data.to,

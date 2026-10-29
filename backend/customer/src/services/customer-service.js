@@ -228,7 +228,24 @@ class CustomerService {
           if (userId && product) this.ManageCart(userId, product, qty, true);
           break;
         case "CREATE_ORDER":
-          if (userId && order) this.ManageOrder(userId, order);
+          if (userId && order) {
+            await this.ManageOrder(userId, order);
+
+            const customer = await this.repository.FindCustomerById({
+              id: userId,
+            });
+
+            if (customer && customer.email) {
+              PublishMessage(this.channel, "mailing_service", {
+                event: "ORDER_CREATED",
+                data: {
+                  to: customer.email,
+                  name: customer.name || "Customer",
+                  order,
+                },
+              });
+            }
+          }
           break;
         default:
           break;
