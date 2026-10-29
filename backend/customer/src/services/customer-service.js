@@ -5,6 +5,7 @@ const {
   GeneratePassword,
   GenerateSalt,
   GenerateSignature,
+  PublishMessage,
   ValidatePassword,
 } = require("../utils");
 const { GOOGLE_CLIENT_ID } = require("../config");
@@ -13,8 +14,9 @@ const oauthClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // All Business logic for customer
 class CustomerService {
-  constructor() {
+  constructor(channel) {
     this.repository = new CustomerRepository();
+    this.channel = channel;
   }
 
   async SignIn(userInputs) {
@@ -77,6 +79,14 @@ class CustomerService {
       salt,
     });
 
+    PublishMessage(this.channel, "mailing_service", {
+      event: "USER_REGISTERED",
+      data: {
+        to: newCustomer.email,
+        name: newCustomer.name || "Customer",
+      },
+    });
+
     const token = await GenerateSignature({
       email: newCustomer.email,
       _id: newCustomer._id,
@@ -120,6 +130,14 @@ class CustomerService {
           password: `google_oauth_${googleId}`,
           phone: "",
           salt: "google_oauth",
+        });
+
+        PublishMessage(this.channel, "mailing_service", {
+          event: "USER_REGISTERED",
+          data: {
+            to: customer.email,
+            name: customer.name || "Google User",
+          },
         });
       }
 
@@ -210,7 +228,24 @@ class CustomerService {
           if (userId && product) this.ManageCart(userId, product, qty, true);
           break;
         case "CREATE_ORDER":
-          if (userId && order) this.ManageOrder(userId, order);
+          if (userId && order) {
+            await this.ManageOrder(userId, order);
+
+            const customer = await this.repository.FindCustomerById({
+              id: userId,
+            });
+
+            if (customer && customer.email) {
+              PublishMessage(this.channel, "mailing_service", {
+                event: "ORDER_CREATED",
+                data: {
+                  to: customer.email,
+                  name: customer.name || "Customer",
+                  order,
+                },
+              });
+            }
+          }
           break;
         default:
           break;
