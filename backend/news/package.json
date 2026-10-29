@@ -1,0 +1,26 @@
+{
+  "name": "news",
+  "version": "1.0.0",
+  "description": "Cradle PC Hardware Market News Scraper & Microservice",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "node src/test-scraper.js"
+  },
+  "keywords": ["pc-hardware", "scraper", "news", "microservices"],
+  "author": "Cradle Engineering",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "cheerio": "^1.0.0-rc.12",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.1",
+    "rss-parser": "^3.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

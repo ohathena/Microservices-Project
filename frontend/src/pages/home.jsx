@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/header';
 import Footer from '../components/footer';
 
@@ -355,28 +356,32 @@ function FocusYourCooling() {
 function YouMayAlsoLike() {
   const products = [
     {
-      name: 'Canvas 27Q',
-      price: 'US$99.99',
-      image: '/images/product_keyboard.jpg',
+      name: 'Canvas 32Q Curved',
+      price: 'US$549.99',
+      image: '/images/product_monitor_front.jpg',
       colors: ['#FFFFFF', '#111111'],
+      link: '/product',
     },
     {
       name: 'Lift',
       price: 'US$39.99',
       image: '/images/product_mouse.jpg',
       colors: ['#FFFFFF', '#A855F7', '#06B6D4', '#111111'],
+      link: '/product',
     },
     {
       name: 'Monitor Arm (Dual)',
       price: 'US$169.99',
       image: '/images/product_monitor_arm.jpg',
       colors: [],
+      link: '/product',
     },
     {
       name: 'Relay Headset',
       price: 'US$99.99',
       image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=500&q=80',
       colors: ['#FFFFFF', '#111111'],
+      link: '/product',
     },
   ];
 
@@ -391,8 +396,9 @@ function YouMayAlsoLike() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {products.map((item, idx) => (
-          <div
+          <Link
             key={idx}
+            to={item.link || '/product'}
             className="group bg-[#F6F6F4] p-5 sm:p-6 rounded-xl border border-neutral-200/50 flex flex-col justify-between hover:border-black transition-all cursor-pointer"
           >
             {/* Header: Name and optional color circles */}
@@ -428,7 +434,7 @@ function YouMayAlsoLike() {
                 {item.price}
               </span>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

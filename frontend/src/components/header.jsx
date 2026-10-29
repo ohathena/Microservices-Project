@@ -267,25 +267,8 @@ const SEARCH_RESULTS_MOCK = [
   },
 ];
 
-/* Initial mock cart */
-const INITIAL_CART = [
-  {
-    id: 101,
-    name: 'Cradle Apex Horizon Gaming PC',
-    specs: 'Ryzen 7 7800X3D • RTX 4080 Super • 32GB RAM',
-    price: 2499,
-    quantity: 1,
-    image: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=150&q=80',
-  },
-  {
-    id: 102,
-    name: 'Cradle MagPulse 75 Keyboard',
-    specs: 'Hall-Effect Magnetic Switches • Stealth Black',
-    price: 189,
-    quantity: 1,
-    image: 'https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=150&q=80',
-  },
-];
+/* Initial cart - empty by default */
+const INITIAL_CART = [];
 
 /* =========================================================================
    MEGA MENU COMPONENTS
@@ -570,10 +553,10 @@ function SearchPanel({ isOpen, onClose }) {
 
   const filteredResults = query.trim()
     ? SEARCH_RESULTS_MOCK.filter((item) =>
-        item.name.toLowerCase().includes(query.toLowerCase()) ||
-        item.category.toLowerCase().includes(query.toLowerCase()) ||
-        item.specs.toLowerCase().includes(query.toLowerCase())
-      )
+      item.name.toLowerCase().includes(query.toLowerCase()) ||
+      item.category.toLowerCase().includes(query.toLowerCase()) ||
+      item.specs.toLowerCase().includes(query.toLowerCase())
+    )
     : [];
 
   return (
@@ -983,14 +966,6 @@ function AccountDropdown({ isOpen, onClose }) {
               <span>My Orders & RMA</span>
             </Link>
             <Link
-              to="/wishlist"
-              onClick={onClose}
-              className="flex items-center justify-between px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
-            >
-              <span>Saved PC Builds</span>
-              <span className="text-[10px] px-1.5 py-0.5 bg-neutral-100 rounded text-neutral-600 font-bold">3</span>
-            </Link>
-            <Link
               to="/support"
               onClick={onClose}
               className="block px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
@@ -1030,14 +1005,6 @@ function AccountDropdown({ isOpen, onClose }) {
               className="block px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
             >
               Orders & Tracking
-            </Link>
-            <Link
-              to="/wishlist"
-              onClick={onClose}
-              className="flex items-center justify-between px-4 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 hover:text-black transition-colors"
-            >
-              <span>Saved PC Builds</span>
-              <span className="text-[10px] px-1.5 py-0.5 bg-neutral-100 rounded text-neutral-600 font-bold">3</span>
             </Link>
             <Link
               to="/support"
@@ -1198,9 +1165,8 @@ function MobileMenuDrawer({
               <span>Gaming PCs</span>
               <ChevronDown
                 size={16}
-                className={`transition-transform duration-200 ${
-                  expandedSection === 'gaming-pcs' ? 'rotate-180' : ''
-                }`}
+                className={`transition-transform duration-200 ${expandedSection === 'gaming-pcs' ? 'rotate-180' : ''
+                  }`}
               />
             </button>
             {expandedSection === 'gaming-pcs' && (
@@ -1238,9 +1204,8 @@ function MobileMenuDrawer({
               <span>Components</span>
               <ChevronDown
                 size={16}
-                className={`transition-transform duration-200 ${
-                  expandedSection === 'components' ? 'rotate-180' : ''
-                }`}
+                className={`transition-transform duration-200 ${expandedSection === 'components' ? 'rotate-180' : ''
+                  }`}
               />
             </button>
             {expandedSection === 'components' && (
@@ -1278,9 +1243,8 @@ function MobileMenuDrawer({
               <span>Peripherals</span>
               <ChevronDown
                 size={16}
-                className={`transition-transform duration-200 ${
-                  expandedSection === 'peripherals' ? 'rotate-180' : ''
-                }`}
+                className={`transition-transform duration-200 ${expandedSection === 'peripherals' ? 'rotate-180' : ''
+                  }`}
               />
             </button>
             {expandedSection === 'peripherals' && (
@@ -1329,17 +1293,15 @@ function MobileMenuDrawer({
             <div className="flex gap-2">
               <button
                 onClick={() => setLanguage('EN')}
-                className={`px-2.5 py-1 text-xs font-bold rounded ${
-                  currentLang === 'EN' ? 'bg-black text-white' : 'bg-white text-neutral-700 border border-neutral-300'
-                }`}
+                className={`px-2.5 py-1 text-xs font-bold rounded ${currentLang === 'EN' ? 'bg-black text-white' : 'bg-white text-neutral-700 border border-neutral-300'
+                  }`}
               >
                 EN
               </button>
               <button
                 onClick={() => setLanguage('HI')}
-                className={`px-2.5 py-1 text-xs font-bold rounded ${
-                  currentLang === 'HI' ? 'bg-black text-white' : 'bg-white text-neutral-700 border border-neutral-300'
-                }`}
+                className={`px-2.5 py-1 text-xs font-bold rounded ${currentLang === 'HI' ? 'bg-black text-white' : 'bg-white text-neutral-700 border border-neutral-300'
+                  }`}
               >
                 HI (हिंदी)
               </button>
@@ -1460,17 +1422,15 @@ export default function Header() {
                 }
                 aria-expanded={activeDropdown === 'gaming-pcs'}
                 aria-haspopup="true"
-                className={`group inline-flex items-center gap-1.5 text-[14px] font-medium tracking-normal transition-colors py-2 focus:outline-none ${
-                  activeDropdown === 'gaming-pcs' ? 'text-black' : 'text-[#111111] hover:text-neutral-500'
-                }`}
+                className={`group inline-flex items-center gap-1.5 text-[14px] font-medium tracking-normal transition-colors py-2 focus:outline-none ${activeDropdown === 'gaming-pcs' ? 'text-black' : 'text-[#111111] hover:text-neutral-500'
+                  }`}
               >
                 <span>Gaming PCs</span>
                 <ChevronDown
                   size={14}
                   strokeWidth={2}
-                  className={`text-[#111111] transition-transform duration-200 ${
-                    activeDropdown === 'gaming-pcs' ? 'rotate-180' : ''
-                  }`}
+                  className={`text-[#111111] transition-transform duration-200 ${activeDropdown === 'gaming-pcs' ? 'rotate-180' : ''
+                    }`}
                 />
               </button>
             </div>
@@ -1486,17 +1446,15 @@ export default function Header() {
                 }
                 aria-expanded={activeDropdown === 'components'}
                 aria-haspopup="true"
-                className={`group inline-flex items-center gap-1.5 text-[14px] font-medium tracking-normal transition-colors py-2 focus:outline-none ${
-                  activeDropdown === 'components' ? 'text-black' : 'text-[#111111] hover:text-neutral-500'
-                }`}
+                className={`group inline-flex items-center gap-1.5 text-[14px] font-medium tracking-normal transition-colors py-2 focus:outline-none ${activeDropdown === 'components' ? 'text-black' : 'text-[#111111] hover:text-neutral-500'
+                  }`}
               >
                 <span>Components</span>
                 <ChevronDown
                   size={14}
                   strokeWidth={2}
-                  className={`text-[#111111] transition-transform duration-200 ${
-                    activeDropdown === 'components' ? 'rotate-180' : ''
-                  }`}
+                  className={`text-[#111111] transition-transform duration-200 ${activeDropdown === 'components' ? 'rotate-180' : ''
+                    }`}
                 />
               </button>
             </div>
@@ -1512,31 +1470,24 @@ export default function Header() {
                 }
                 aria-expanded={activeDropdown === 'peripherals'}
                 aria-haspopup="true"
-                className={`group inline-flex items-center gap-1.5 text-[14px] font-medium tracking-normal transition-colors py-2 focus:outline-none ${
-                  activeDropdown === 'peripherals' ? 'text-black' : 'text-[#111111] hover:text-neutral-500'
-                }`}
+                className={`group inline-flex items-center gap-1.5 text-[14px] font-medium tracking-normal transition-colors py-2 focus:outline-none ${activeDropdown === 'peripherals' ? 'text-black' : 'text-[#111111] hover:text-neutral-500'
+                  }`}
               >
                 <span>Peripherals</span>
                 <ChevronDown
                   size={14}
                   strokeWidth={2}
-                  className={`text-[#111111] transition-transform duration-200 ${
-                    activeDropdown === 'peripherals' ? 'rotate-180' : ''
-                  }`}
+                  className={`text-[#111111] transition-transform duration-200 ${activeDropdown === 'peripherals' ? 'rotate-180' : ''
+                    }`}
                 />
               </button>
             </div>
 
-            {/* 4. News (NO CHEVRON as explicitly specified) */}
-            <div
-              className="relative h-full flex items-center"
-              onMouseEnter={() => handleMouseEnter('news')}
-            >
+            {/* 4. News - Direct Link (No dropdown) */}
+            <div className="relative h-full flex items-center">
               <Link
                 to="/news"
-                className={`inline-flex items-center text-[14px] font-medium tracking-normal transition-colors py-2 focus:outline-none ${
-                  activeDropdown === 'news' ? 'text-black' : 'text-[#111111] hover:text-neutral-500'
-                }`}
+                className="inline-flex items-center text-[14px] font-medium tracking-normal text-[#111111] hover:text-neutral-500 transition-colors py-2 focus:outline-none"
               >
                 <span>News</span>
               </Link>
@@ -1557,9 +1508,9 @@ export default function Header() {
               <Search size={20} strokeWidth={1.6} />
             </button>
 
-            {/* Shopping Bag / Cart Icon */}
-            <button
-              onClick={() => setIsCartOpen(true)}
+            {/* Shopping Bag / Cart Icon - Navigates to /cart */}
+            <Link
+              to="/cart"
               aria-label={`Shopping Cart with ${totalCartCount} items`}
               title="Shopping Cart"
               className="relative p-1 text-[#111111] hover:text-neutral-500 transition-colors focus:outline-none"
@@ -1570,7 +1521,7 @@ export default function Header() {
                   {totalCartCount}
                 </span>
               )}
-            </button>
+            </Link>
 
             {/* User / Account Icon */}
             <div className="relative">
@@ -1630,9 +1581,7 @@ export default function Header() {
             {activeDropdown === 'peripherals' && (
               <PeripheralsMegaMenu onClose={() => setActiveDropdown(null)} />
             )}
-            {activeDropdown === 'news' && (
-              <NewsMegaMenu onClose={() => setActiveDropdown(null)} />
-            )}
+
           </div>
         )}
       </header>
