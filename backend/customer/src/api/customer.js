@@ -3,7 +3,7 @@ const UserAuth = require('./middlewares/auth');
 const { SubscribeMessage } = require('../utils');
 
 module.exports = (app, channel) => {
-  const service = new CustomerService();
+  const service = new CustomerService(channel);
 
   // Listen for message broker events if channel exists
   if (channel) {

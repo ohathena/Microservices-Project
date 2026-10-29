@@ -47,12 +47,12 @@ async function sendEmail({ to, subject, html }) {
 async function handleMailEvent(payload) {
     const { event, data } = payload;
 
-    if(!data || !data.to){
-        throw new Error("Missing recepient email");
-    }
-
     switch (event) {
         case "USER_REGISTERED": {
+            if (!data || !data.to) {
+                throw new Error("Missing recipient email");
+            }
+
             const template = welcomeEmailTemplate({ name: data.name || "Customer",});
 
             await sendEmail({

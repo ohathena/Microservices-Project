@@ -1,6 +1,7 @@
 const dotEnv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
+const isLocal = process.env.NODE_ENV === "dev" || process.env.NODE_ENV === "local";
 
 // Load .env from backend/customer
 const rootEnv = path.resolve(__dirname, "../../.env");
@@ -24,7 +25,9 @@ module.exports = {
   DB_URL: process.env.DATABASE_URL || process.env.DB_URL || process.env.MONGODB_URI,
   APP_SECRET: process.env.APP_SECRET || 'backend_project_team10',
   EXCHANGE_NAME: process.env.EXCHANGE_NAME || 'ONLINE_STORE',
-  MSG_QUEUE_URL: process.env.MSG_QUEUE_URL || 'amqp://rabbitmq:5672',
+  MSG_QUEUE_URL:
+    process.env.MSG_QUEUE_URL ||
+    (isLocal ? "amqp://localhost:5672" : "amqp://rabbitmq:5672"),
   CUSTOMER_SERVICE: "customer_service",
   SHOPPING_SERVICE: "shopping_service",
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
