@@ -2,6 +2,7 @@ const dotenv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
 
+const isLocal = process.env.NODE_ENV === "local";
 const envFile = process.env.NODE_ENV
   ? path.resolve(__dirname, `../../.env.${process.env.NODE_ENV}`)
   : path.resolve(__dirname, "../../.env");
@@ -14,10 +15,12 @@ if (fs.existsSync(envFile)) {
 
 module.exports = {
   PORT: Number(process.env.PORT || 8004),
-  MSG_QUEUE_URL: process.env.MSG_QUEUE_URL || "amqp://rabbitmq:5672",
+  MSG_QUEUE_URL:
+    process.env.MSG_QUEUE_URL ||
+    (isLocal ? "amqp://localhost:5672" : "amqp://rabbitmq:5672"),
   EXCHANGE_NAME: process.env.EXCHANGE_NAME || "ONLINE_STORE",
   MAILING_SERVICE: process.env.MAILING_SERVICE || "mailing_service",
-  SMTP_HOST: process.env.SMTP_HOST || "mailpit",
+  SMTP_HOST: process.env.SMTP_HOST || (isLocal ? "localhost" : "mailpit"),
   SMTP_PORT: Number(process.env.SMTP_PORT || 1025),
   SMTP_SECURE: process.env.SMTP_SECURE === "true",
   SMTP_USER: process.env.SMTP_USER,

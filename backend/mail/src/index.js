@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { PORT } = require("./config");
+const { startConsumer } = require("./messaging/consumer");
 
 const app = express();
 
@@ -16,6 +17,16 @@ app.get("/whoami", (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-  console.log(`Mail Service is running on port ${PORT}`);
-});
+async function startServer() {
+  try {
+    await startConsumer();
+    app.listen(PORT, () => {
+      console.log(`Mail Service is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Mail Service startup failed:", error.message);
+    process.exitCode = 1;
+  }
+}
+
+startServer();
