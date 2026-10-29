@@ -1,7 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
-const amqplib = require("amqplib");
 
 const {
   APP_SECRET,
@@ -59,41 +58,18 @@ module.exports.FormateData = (data) => {
 
 //Raise Events
 module.exports.PublishCustomerEvent = async (payload) => {
-  axios.post("http://customer:8001/app-events/", {
-    payload,
-  });
-
-  //     axios.post(`${BASE_URL}/customer/app-events/`,{
-  //         payload
-  //     });
+  // axios.post("http://customer:8001/app-events/", { payload });
 };
 
 module.exports.PublishShoppingEvent = async (payload) => {
-  // axios.post('http://gateway:8000/shopping/app-events/',{
-  //         payload
-  // });
-
-  axios.post(`http://shopping:8003/app-events/`, {
-    payload,
-  });
+  // axios.post(`http://shopping:8003/app-events/`, { payload });
 };
 
-//Message Broker
-
+//Message Broker (RabbitMQ removed - standalone mode)
 module.exports.CreateChannel = async () => {
-  try {
-    const connection = await amqplib.connect(MSG_QUEUE_URL);
-    const channel = await connection.createChannel();
-    await channel.assertExchange(EXCHANGE_NAME, "direct", { durable: true });
-    return channel;
-  } catch (err) {
-    console.warn("RabbitMQ unavailable; products service is running without events.");
-    return null;
-  }
+  return null;
 };
 
 module.exports.PublishMessage = (channel, service, msg) => {
-  if (!channel) return;
-  channel.publish(EXCHANGE_NAME, service, Buffer.from(msg));
-  console.log("Sent: ", msg);
+  // No-op in standalone mode
 };

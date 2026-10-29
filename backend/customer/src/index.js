@@ -10,8 +10,13 @@ const StartServer = async () => {
   // Initialize Neon PostgreSQL Database
   await databaseConnection();
 
-  // Initialize Message Broker (RabbitMQ) if available
-  const channel = await CreateChannel();
+  // Initialize Message Broker (RabbitMQ) for Customer -> Mail
+  let channel = null;
+  try {
+    channel = await CreateChannel();
+  } catch (err) {
+    console.warn("RabbitMQ initialization error, proceeding standalone:", err.message);
+  }
 
   // Initialize Express App
   await expressApp(app, channel);
@@ -23,9 +28,6 @@ const StartServer = async () => {
     .on('error', (err) => {
       console.error('Server error:', err);
       process.exit(1);
-    })
-    .on('close', () => {
-      if (channel) channel.close();
     });
 };
 
