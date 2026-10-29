@@ -12,6 +12,9 @@ services:
       - /app/customer/node_modules
     env_file:
       - ./customer/.env.dev
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
   products:
     build:
@@ -46,6 +49,11 @@ services:
       - "5672:5672"
       - "15672:15672"
     restart: always
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_listener", "5672"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
 
   nginx-proxy:
     build:
@@ -80,8 +88,10 @@ services:
     env_file:
       - ./mail/.env.dev
     depends_on:
-      - rabbitmq
-      - mailpit
+      rabbitmq:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
 
 volumes:
   products-mongodb-data:
